@@ -1,1 +1,1 @@
-Array Hashmap problems will be added here.
+Array and Hashmap problems will be added here.
