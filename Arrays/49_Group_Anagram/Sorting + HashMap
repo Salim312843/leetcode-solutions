@@ -1,0 +1,47 @@
+Idea :
+Sort each word
+Use sorted word as key
+Store original word in HashMap
+
+
+import java.util.*;
+
+class Solution {
+    public List<List<String>> groupAnagrams(String[] strs) {
+        
+        // Step 1: Create HashMap
+        HashMap<String, List<String>> map = new HashMap<>();
+        
+        // Step 2: Traverse each word
+        for(String word : strs) {
+            
+            // Step 3: Convert word to char array
+            char[] arr = word.toCharArray();
+            
+            // Step 4: Sort the characters
+            Arrays.sort(arr);
+            
+            // Step 5: Convert back to string (this is key)
+            String key = new String(arr);
+            
+            // Step 6: Insert into HashMap
+            if(!map.containsKey(key)) {
+                map.put(key, new ArrayList<>());
+            }
+            
+            map.get(key).add(word);
+        }
+        
+        // Step 7: Return all grouped values
+        return new ArrayList<>(map.values());
+    }
+}
+
+
+Time Complexity
+O(n * k log k)
+n = number of words
+k = length of each word
+
+Space Complexity
+O(nk)
