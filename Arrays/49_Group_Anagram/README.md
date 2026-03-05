@@ -35,3 +35,35 @@ It will be:
  7)                    |   Combine Everything  : O(n² × k)                          Space for Storing Output  = O(nk)       
  7)                    |   Combine Everything  : O(n² × k)                           n = number of words
  7)                    |   Combine Everything  : O(n² × k)                           k = average length
+
+# H2 HashMap + Sorting Approach
+In this approach, the main idea is to use sorting to identify anagrams and HashMap to group them.
+
+Two strings are anagrams if they contain the same characters with the same frequency. When the characters of an anagram strings are sorted alphabetically, they produce the same sorted string.
+For example:
+eat → aet
+tea → aet
+ate → aet
+Since the sorted result is identical, these words belong to the same group
+
+**Working Principle**
+1)Traverse each string in the given array.
+2)Convert the string into a character array.
+3)Sort the character array.
+4)Convert the sorted array back into a string.
+5)Use this sorted string as a key in a HashMap.
+6)Store the original string in the list corresponding to that key.
+7)After processing all strings, return all values of the HashMap
+
+
+# H2 [Optimized Approach]: HashMap + Character Frequency Count
+This approach is based on the observation that anagrams contain the same characters with identical frequencies. Therefore, if two strings have the same frequency distribution of characters, they must belong to the same anagram group.
+
+**Working Principle**
+1)Anagrams have the same characters with the same frequency.
+2)Create a frequency array of size 26 for each string.
+3)Count occurrences of each character (a–z) in the string.
+4)Convert the frequency array into a unique key string.
+5)Use a HashMap where key = frequency pattern.
+6)Store all strings with the same key in the same list.
+7)Finally, return all the lists from the HashMap as grouped anagrams.
