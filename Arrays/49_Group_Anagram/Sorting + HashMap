@@ -38,10 +38,12 @@ class Solution {
 }
 
 
-Time Complexity
-O(n * k log k)
-n = number of words
-k = length of each word
+TIME COMPLEXITY  : O(n * k log k)      ;  n = number of words  ;  k = length of each word
+                  For each string, we sort its characters  :  O(K log K)
+                  After sorting, we store the sorted string as a key in the HashMap, which takes O(1) average time
+                  We iterate through all N strings in the input array   :  O(N)
+                  So Overall  :  O(N)×O(KlogK)=O(NKlogK)
 
-Space Complexity
-O(nk)
+SAPACE COMPLEXITY  :  O(nk)
+                    The HashMap stores N strings in the worst case.
+                    Each string may take up to K characters.
