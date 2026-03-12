@@ -1,21 +1,21 @@
+import java.util.HashMap;
+
 class Solution {
     public int[] twoSum(int[] nums, int target) {
-        HashMap<Integer, Integer> numIndexMap = new HashMap<>();
-        
-        // Store all numbers and their indices for O(1) lookup
+
+        HashMap<Integer, Integer> map = new HashMap<>();
+
         for (int i = 0; i < nums.length; i++) {
-            numIndexMap.put(nums[i], i);
-        }
-        
-        // Find complement for each number
-        for (int i = 0; i < nums.length; i++) {
+
             int complement = target - nums[i];
-            if (numIndexMap.containsKey(complement) && numIndexMap.get(complement) != i) {
-                return new int[] { i, numIndexMap.get(complement) };
+
+            if (map.containsKey(complement)) {
+                return new int[]{map.get(complement), i};
             }
+
+            map.put(nums[i], i);
         }
-        
-        return new int[] {};
+
+        return new int[]{};
     }
 }
-
