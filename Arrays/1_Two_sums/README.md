@@ -117,9 +117,16 @@ In the worst case all elements are unique.
 - Requires extra memory.
 - Hash collisions may slightly affect performance (rare).
 
-- ### Single Pass vs Two pass approach Code
+### Single Pass vs Two pass approach Code
 - In the Two Pass approach, the algorithm first stores all elements of the array with their indices in a HashMap using one loop, and then uses a second loop to search for the complement of each element. In contrast, the Single Pass approach performs both storing and searching in the same loop. While traversing the array, it first checks if the complement of the current element already exists in the HashMap, and if not, it stores the current element with its index. Thus, the single pass approach combines both operations in one traversal instead of two separate passes.
 
+- ### Question Stetement : and you may not use the same element twice.
+-Single Pass: Same element cannot occur because the current element is added after checking complement.
+              No extra condition is required in the code.
+              
+Two Pass: All elements already exist in the map, so we must explicitly check that indices are different
+          the algorithm might accidentally match the same element with itself. To prevent this, an extra condition is added in the code
+          numIndexMap.get(complement) != i
 ---
 
 # Key Insight
