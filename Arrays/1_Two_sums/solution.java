@@ -13,9 +13,18 @@ class Solution {
                 return new int[]{map.get(complement), i};
             }
 
-            map.put(nums[i], i);
+            map.put(nums[i], i);                //If complement is not found, we store the current element.
         }
 
-        return new int[]{};
+        return new int[]{};                     //This runs only if no pair is found.
     }
 }
+
+
+
+
+
+//Method Breakdown   :   
+                   int[] - return type  ,  two sum - method name , (int[] nums, int target) - inputs 
+                   in short : A public method named twoSum that takes an integer array and a target value as input and returns an array of two indices
+                             whose elements add up to the target.
