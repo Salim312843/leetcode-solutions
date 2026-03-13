@@ -35,14 +35,19 @@ Given an integer array `nums`, return **true** if any value appears **at least t
 
 ---
 
-### 3️⃣ HashSet Approach (Optimal) ⭐
+### 3️⃣ HashSet Approach (Optimal) ⭐ (Single Pass HashSet)
+  ** HashSet stores only values **      If you only need to check existence of an element → HashSet
+  ** HashMap stores key -> value pair **      If you need extra information (like index, frequency, etc.) → HashMap
 
-**Idea:**
-- Use a `HashSet` to store elements already seen.
-- While iterating through the array:
-  - If the element already exists in the set → duplicate found.
-  - Otherwise add it to the set.
-
+**Algorithm**
+-Create an empty HashSet to store elements.
+-Traverse the array from index 0 to n-1.
+-For each element in the array:
+-Check if the element already exists in the HashSet.
+-If it exists → duplicate found, return true.
+-If it does not exist → add the element to the HashSet.
+-Continue the traversal until the end of the array.
+-If no duplicate is found after the loop ends → return false
 This allows fast lookup in constant time.
 
 **Time Complexity:** O(n)  : We iterate through the array once.
