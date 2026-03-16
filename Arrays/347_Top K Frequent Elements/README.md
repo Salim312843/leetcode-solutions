@@ -1,5 +1,5 @@
 
-# 347. Top K Frequent Elements
+# 347. Top K Frequent Elements   [level : medium]
 
 ## Problem Statement
 Given an integer array `nums` and an integer `k`, return the **k most frequent elements**.
@@ -81,9 +81,12 @@ k is in the range [1, number of unique elements]
 
 ### Algorithm
 
-1. Count frequency using nested loops.
-2. Store frequencies.
-3. Find the largest frequency elements.
+1.Create a HashMap to store frequency.
+2.Traverse the array and count occurrences.
+3.Convert the map entries into a list.
+4.Sort the list based on frequency (descending).
+5.Take the first k elements from the list.
+6.Return them as the result.
 
 ### Time Complexity
 
