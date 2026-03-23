@@ -31,15 +31,6 @@ Important observations from the problem:
 - Then we must **return the k elements with highest frequency**.
 - Order of output **does not matter**.
 
-### Key Idea
-
-The problem can be divided into **two steps**:
-
-1. **Count frequency of each number**
-2. **Select the k elements with highest frequency**
-
-This suggests using **HashMap for frequency counting**.
-
 ---
 
 # Constraints Analysis
