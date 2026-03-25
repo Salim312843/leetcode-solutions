@@ -192,11 +192,8 @@ HashMap stores frequencies.
 # 4️⃣ Bucket Sort Approach (Optimal) ⭐
 
 ### Idea
+We first count how many times each number appears so we know which are most frequent. Then instead of sorting everything (which is slow), we group numbers into buckets based on their frequency (like same-frequency numbers together). After that, we simply go from the highest frequency bucket to the lowest and pick the first k elements
 
-- Frequency of elements ranges from **1 to n**.
-- Create **buckets where index = frequency**.
-- Store numbers based on their frequency.
-- Traverse buckets from highest frequency.
 
 ### Algorithm
 
