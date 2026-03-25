@@ -13,22 +13,22 @@ class Solution {
         // Step 2: Create bucket array
         List<Integer>[] bucket = new ArrayList[nums.length + 1];
 
-        for (int key : map.keySet()) {           // 1, 2, 3
-            int freq = map.get(key);             // 1 → 3  2 → 2  3 → 1
+        for (int key : map.keySet()) {           //  start filling buckets 
+            int freq = map.get(key);             // get frequency
 
             if (bucket[freq] == null) {
-                bucket[freq] = new ArrayList<>();          // bucket[1] → [3]
-                }                                            // bucket[2] → [2]
-             bucket[freq].add(key);                                           //bucket[3] → [1]
+                bucket[freq] = new ArrayList<>();          //Check if Bucket Exists
+                }                                           
+             bucket[freq].add(key);                                           ]
             } 
 
 
         // Step 3: Collect top k elements
-        int[] result = new int[k];
+        int[] result = new int[k];          //Create Result Array
         int index = 0;
 
-        for (int i = bucket.length - 1; i >= 0 && index < k; i--) {
-            if (bucket[i] != null) {
+        for (int i = bucket.length - 1; i >= 0 && index < k; i--) {           //Traverse Buckets
+            if (bucket[i] != null) {               //Check if Bucket Exists
                 for (int num : bucket[i]) {
                     result[index++] = num;
 
