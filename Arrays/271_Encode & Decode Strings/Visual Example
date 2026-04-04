@@ -1,0 +1,51 @@
+ENCODING :
+
+Input List:  ["Hi", "Bye"]
+
+Processing:
+  "Hi"  → length=2  → append: 2#Hi
+  "Bye" → length=3  → append: 3#Bye
+
+Output String: "2#Hi3#Bye"
+
+
+DECODING :
+
+
+---
+
+## 🔓 Decoding Process (Using i and j pointers)
+
+### Step 1:
+- i = 0 (start)
+- j moves until `#` → found at position 1  
+- length = "2" → 2  
+- string = next 2 characters after `#` → "Hi"  
+- i jumps to 4  
+
+---
+
+### Step 2:
+- i = 4  
+- j moves until `#` → found at position 5  
+- length = "3" → 3  
+- string = next 3 characters after `#` → "Bye"  
+- i jumps to 9 (end)  
+
+---
+
+
+---
+
+## 🧠 Key Idea
+- Use `j` to find `#`  
+- Extract length  
+- Use length to get string  
+- Move `i` forward and repeat  
+
+---
+
+## 🎯 Summary
+👉 i → start pointer  
+👉 j → finds delimiter (#)  
+👉 length → controls extraction (no confusion)
