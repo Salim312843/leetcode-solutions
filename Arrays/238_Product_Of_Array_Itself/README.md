@@ -21,51 +21,84 @@ Follow up: Can you solve the problem in O(1) extra space complexity? (The output
 
 ```
 ```
-### Conditions:
-
-- You must solve it **without using division**.
-- The solution must run in **O(n)** time.
-
 ---
 
 # Breakdown of the Question (How to Think)
 
-Key observations:
+# 🔍 Question Signals (What & Why)
 
-- For each index `i`, we need:
-  - Product of elements **before i**
-  - Product of elements **after i**
+### 1️⃣ "Except nums[i]"
+👉 What:
+- Exclude current element
 
-So:
+👉 Why:
+- Forces you to think in parts:
+  - Left side
+  - Right side
+
+---
+
+### 2️⃣ "Without division"
+👉 What:
+- Cannot use total_product / nums[i]
+
+👉 Why:
+- Division breaks when 0 is present
+- Forces logical approach (prefix + suffix)
+
+---
+
+### 3️⃣ "O(n) time"
+👉 What:
+- Must solve in linear time
+
+👉 Why:
+- n is large (10^5)
+- Brute force O(n²) will fail
+
+---
+
+### 4️⃣ "Product fits in 32-bit"
+👉 What:
+- No overflow issue
+
+👉 Why:
+- Focus is on logic, not big numbers
+
+---
+
+### 5️⃣ "Values include 0 and negatives"
+👉 What:
+- nums[i] can be 0 or negative
+
+👉 Why:
+- Must handle:
+  - Zero carefully
+  - Sign of product
+
+---
+
+### 6️⃣ "Follow-up: O(1) space"
+👉 What:
+- No extra arrays allowed
+
+👉 Why:
+- Tests optimization
+- Forces reuse of output array
+
+---
 
 ```
-answer[i] = left_product[i] * right_product[i]
 ```
 
-### Key Idea
-
-Instead of calculating product repeatedly:
-
-- Precompute:
-  - Prefix products (left side)
-  - Suffix products (right side)
 
 ---
 
 # Constraints Analysis
 
-Typical constraints:
-
 ```
-2 ≤ nums.length ≤ 10^5
--30 ≤ nums[i] ≤ 30
 ```
 
-### What these constraints tell us
-
-- Large input size → **O(n²)** not allowed
-- Cannot use division → must compute manually
-- Need efficient traversal → **O(n)** required
 
 ---
 
