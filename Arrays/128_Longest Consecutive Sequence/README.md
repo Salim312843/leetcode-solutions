@@ -1,4 +1,4 @@
-# 128. Longest Consecutive Sequence
+# 128. Longest Consecutive Sequence  [ LEVEL : MEDIUM ]
 
 ## Problem Statement
 
@@ -171,3 +171,58 @@ Unsorted + O(n) + sequence
 
 👉 Think: HashSet + sequence start detection
 ```
+
+## 🔥 Why HashSet is Optimal (Compared to Other Approaches)
+
+### ✅ 1. Best Time Complexity
+- HashSet → **O(n)**
+- Sorting → O(n log n)
+- Brute Force → O(n²)
+
+👉 Meets optimal requirement
+
+---
+
+### ✅ 2. No Sorting Required
+- Sorting adds extra **O(n log n)** cost  
+- HashSet works directly on unsorted data  
+
+---
+
+### ✅ 3. Constant Time Lookup
+- Checking `num + 1`:
+  - Array → O(n)
+  - HashSet → **O(1)**
+
+👉 Major performance improvement
+
+---
+
+### ✅ 4. Avoids Redundant Work
+- Only start when:
+- num - 1 is NOT present
+- Prevents re-counting sequences  
+
+---
+
+### ✅ 5. Handles Duplicates Automatically
+- HashSet removes duplicates internally  
+- No extra logic needed  
+
+---
+
+### ✅ 6. Supports Large Value Range
+- Works efficiently for values from **-10^9 to 10^9**  
+- No need for large indexing arrays  
+
+---
+
+### ✅ 7. Linear Traversal
+- Insert all elements → O(n)  
+- Traverse once → O(n)  
+- No nested loops required  
+
+---
+
+## 🎯 Conclusion
+> HashSet is optimal because it provides constant-time lookup, avoids sorting, eliminates redundant computations, and achieves overall O(n) time complexity.
