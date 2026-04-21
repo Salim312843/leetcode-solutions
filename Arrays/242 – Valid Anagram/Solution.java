@@ -1,3 +1,6 @@
+
+// APPROACH : FREQUENCY COUNT APPROACH 
+
 class Solution {
     public boolean isAnagram(String s, String t) {
 
