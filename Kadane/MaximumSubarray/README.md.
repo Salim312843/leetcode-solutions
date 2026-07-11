@@ -1,0 +1,230 @@
+# Maximum Subarray — Kadane's Algorithm
+### A Pattern-Thinking Guide (not just a solution)
+
+> Most resources show you the algorithm. This one is built to answer a harder question:
+> **"Why THIS pattern, and not one of the five other patterns this problem *almost* looks like?"**
+> If you only remember the code, you'll fail on the next problem that looks 80% similar. If you understand *why* every keyword pins down this exact pattern, you'll never be fooled again.
+
+---
+
+## Table of Contents
+- [Start Here: The Problem Looks Like 5 Different Problems](#start-here-the-problem-looks-like-5-different-problems)
+- [Keyword Autopsy — Change One Word, Change the Pattern](#keyword-autopsy--change-one-word-change-the-pattern)
+- [The Decision Tree You Should Run In Your Head](#the-decision-tree-you-should-run-in-your-head)
+- [The One Question That Unlocks the Algorithm](#the-one-question-that-unlocks-the-algorithm)
+- [Why Brute Force Fails You Mentally (Not Just Speed-Wise)](#why-brute-force-fails-you-mentally-not-just-speed-wise)
+- [The Recurrence, Derived](#the-recurrence-derived)
+- [The Bug That Separates Beginners From People Who Understand](#the-bug-that-separates-beginners-from-people-who-understand)
+- [Java Solution](#java-solution)
+- [Complexity — and Why You Should Distrust Any Faster Claim](#complexity--and-why-you-should-distrust-any-faster-claim)
+- [Dry Runs Chosen to Break Wrong Mental Models](#dry-runs-chosen-to-break-wrong-mental-models)
+- [Mutation Drills — Test If You Actually Understand](#mutation-drills--test-if-you-actually-understand)
+- [Near-Neighbor Patterns (The Ones That Trick People)](#near-neighbor-patterns-the-ones-that-trick-people)
+- [How To Use This Repo If You're Serious About Getting Good](#how-to-use-this-repo-if-youre-serious-about-getting-good)
+
+---
+
+## Start Here: The Problem Looks Like 5 Different Problems
+
+Read the problem statement again:
+
+> Find the contiguous subarray with the largest sum.
+
+A beginner's brain pattern-matches on surface words: "array," "maximum," "subarray" — and jumps to whatever pattern they learned most recently. That's how people wrongly reach for **Sliding Window**, **Prefix Sum + Brute Force**, or even **Two Pointers**.
+
+The skill this repo is trying to build isn't "know Kadane's." It's: **train yourself to interrogate every keyword until only one pattern survives.**
+
+---
+
+## Keyword Autopsy — Change One Word, Change the Pattern
+
+This is the core exercise. Take the original problem and mutate **one phrase at a time**. Watch how the correct pattern changes completely.
+
+| Problem statement | Pattern | Why |
+|---|---|---|
+| "Max sum of any **contiguous subarray**" | **Kadane's** | Contiguous + no size limit + optimize a running sum → extend-or-restart decision |
+| "Max sum of any contiguous subarray **of size k**" | **Sliding Window** | Fixed size k means you're not deciding *how much* to include — you're sliding a fixed window and doing O(1) add/remove at the edges |
+| "Max sum of any **subsequence**" (order preserved, gaps allowed) | Different DP (depends on constraints) | Non-contiguous breaks Kadane's core assumption — you can't just "extend or restart," you now have a *choice per element*: include or exclude |
+| "Max sum of any subarray, but the array is **circular**" | **Kadane's + trick (total − min subarray)** | Wrap-around breaks straightforward left-to-right scanning — you need a second pass |
+| "Max **product** of any contiguous subarray" | **Kadane's variant (two running values)** | Multiplication flips sign behavior — a very negative running value can become the *best* value if multiplied by another negative. One variable is no longer enough. |
+| "Find if there **exists** a subarray with sum = target" | **Prefix Sum + HashMap** | You're no longer optimizing a value — you're checking existence/equality. Totally different tool. |
+| "Count the number of subarrays with sum = k" | **Prefix Sum + HashMap (counting)** | Again — counting, not optimizing. Kadane's has no notion of "count." |
+| "Max sum of subarray with **at most k elements removed**" | DP with extra state dimension | Extra constraint = extra dimension in your DP state. Plain Kadane's has no room to track "removals used." |
+
+**The meta-skill:** every one of these changes exactly **one constraint or one verb**, and that alone is enough to invalidate Kadane's. If you can't explain *why* a small wording change breaks the pattern, you don't understand the pattern — you've only memorized code.
+
+---
+
+## The Decision Tree You Should Run In Your Head
+
+Before writing a single line of code, ask these in order:
+
+```
+1. Is the required piece of the array CONTIGUOUS (subarray) or can elements
+   be skipped (subsequence)?
+   -> Subsequence  -> NOT Kadane's, likely a different DP (e.g. LIS, knapsack-style)
+   -> Contiguous   -> continue to Q2
+
+2. Is there a FIXED SIZE constraint (like "size k")?
+   -> Yes -> Sliding Window
+   -> No  -> continue to Q3
+
+3. Am I OPTIMIZING a running value (max/min sum or product),
+   or am I checking EXISTENCE/COUNT of some target sum?
+   -> Existence/Count -> Prefix Sum + HashMap
+   -> Optimizing      -> continue to Q4
+
+4. Could the array contain negative numbers (or zero/negative products)?
+   -> No  -> Trivial -- answer is the whole array (positives) -- you don't even need Kadane's
+   -> Yes -> Kadane's Algorithm (or a Kadane's variant, see Q5)
+
+5. Is it SUM or PRODUCT I'm optimizing?
+   -> Sum     -> Standard Kadane's, ONE running variable
+   -> Product -> Kadane's variant, TWO running variables (max AND min -- because
+                 a very negative product can flip to the best value)
+```
+
+Run this tree on any new problem you meet. If you internalize nothing else from this repo, internalize this tree.
+
+---
+
+## The One Question That Unlocks the Algorithm
+
+Forget formulas for a second. At any index `i` in the array, ask yourself:
+
+> **"If a subarray must end exactly here, what are my only two options?"**
+
+1. **Extend** — glue this element onto whatever subarray ended at the previous index.
+2. **Restart** — cut ties with everything before and begin fresh from this element.
+
+That's the entire algorithm, before it's even written as code. Every DP problem in this "running decision" family (House Robber, Best Time to Buy/Sell Stock, Maximum Product Subarray) is really just a variation of this same question with different rules for what "extend" and "restart" mean.
+
+---
+
+## Why Brute Force Fails You Mentally (Not Just Speed-Wise)
+
+The obvious brute force: check every possible subarray (`O(n²)` pairs of start/end, `O(n)` to sum each = `O(n³)`, or `O(n²)` with prefix sums).
+
+The real reason to reject brute force isn't just "it's slow." It's that brute force treats every subarray as **independent** — you compute its sum from scratch, learning nothing from the subarray you just computed next to it.
+
+**The insight that unlocks the optimization:** the best subarray ending at index `i` has a direct relationship to the best subarray ending at index `i-1`. You are *not* starting from zero each time — you're reusing work. That reuse-of-previous-computation is the fingerprint of **every DP problem**, not just this one. Train yourself to ask: *"Does solving position i give me a shortcut for position i+1?"* If yes, you're looking at DP, and brute force is the wrong lens entirely.
+
+---
+
+## The Recurrence, Derived
+
+```
+current_sum = max(nums[i], current_sum + nums[i])   // extend vs restart
+max_sum     = max(max_sum, current_sum)              // record the best ever seen
+```
+
+- `current_sum` — best sum of a subarray **ending exactly at index i**. Goes up and down.
+- `max_sum` — best sum seen **anywhere so far**. Only ever moves up — a high-water mark.
+
+---
+
+## The Bug That Separates Beginners From People Who Understand
+
+```java
+// WRONG for this problem:
+current_sum = Math.max(0, current_sum + nums[i]);
+```
+
+This silently permits an **empty subarray** (sum = 0) as a valid answer. But the problem demands non-empty. On an all-negative array like `[-8,-3,-6,-2,-5]`, this bug reports `0` instead of the correct `-2`.
+
+**The deeper lesson, not just the fix:** whenever a problem requires a "non-empty" selection, comparing against `0` is almost always wrong — because `0` represents "select nothing," which is a phantom option that doesn't actually exist in the problem's rules. Always ask: *"Does my baseline comparison value represent a choice that's actually legal?"*
+
+---
+
+## Java Solution
+
+```java
+public static int maxSubArray(int[] nums) {
+    int current_sum = nums[0];
+    int max_sum = nums[0];
+
+    for (int i = 1; i < nums.length; i++) {
+        current_sum = Math.max(nums[i], current_sum + nums[i]);
+        max_sum = Math.max(max_sum, current_sum);
+    }
+
+    return max_sum;
+}
+```
+
+- Both variables initialize to `nums[0]` — not `0` — for the reason explained above.
+- Loop starts at `i = 1` since index `0` is already consumed in initialization.
+- `Math.max` always needs the `Math.` prefix in Java; for 3 values, nest: `Math.max(a, Math.max(b, c))`.
+
+---
+
+## Complexity — and Why You Should Distrust Any Faster Claim
+
+| | Complexity | Why |
+|---|---|---|
+| **Time** | O(n) | Every element touched exactly once, O(1) work per element. |
+| **Space** | O(1) | Two variables, regardless of input size. |
+
+**Why you should be suspicious of anything claiming better than O(n):** you cannot determine whether an element belongs in the optimal subarray without at least looking at it. Any algorithm claiming sub-linear time is either wrong or solving a different problem (e.g., with pre-sorted or pre-processed input). This kind of skepticism — "is this complexity claim even *possible* given what the problem demands?" — is a habit worth building for every problem you solve.
+
+---
+
+## Dry Runs Chosen to Break Wrong Mental Models
+
+### Mixed positive/negative — tests the basic mechanism
+`[-2, 1, -3, 4, -1, 2, 1, -5, 4]` → **6** (`[4, -1, 2, 1]`)
+
+### All negative — tests the `max(0,...)` bug directly
+`[-8, -3, -6, -2, -5]` → **-2**
+Combining any two negatives only worsens the sum — so the optimal subarray collapses to a single element, the least negative one.
+
+### All positive — tests whether you over-engineer
+`[2, 3, 1, 4]` → **10**
+"Extend" always wins when everything is positive — no restart ever happens.
+
+### Single element — tests initialization assumptions
+`[7]` → **7**
+
+### Zero mixed in — tests whether you confuse "current" with "best ever"
+`[-1, 0, -2]` → **0**
+`current_sum` dips to `-2` after peaking at `0`, but `max_sum` correctly holds the high-water mark.
+
+---
+
+## Mutation Drills — Test If You Actually Understand
+
+Don't just read these — actually answer them before scrolling further. This is where real understanding gets tested.
+
+1. What pattern would you use if the problem asked for the max sum of a subarray of **exactly** size 3? *(Answer: Sliding Window — fixed size removes the extend/restart decision entirely.)*
+2. What breaks if the array can contain **all zeros**? Trace it — does the algorithm still give the right answer? *(It does — zero acts neutrally in the max comparison. Try tracing `[0,0,0]` yourself.)*
+3. If you had to return the **subarray itself**, not just the sum, what extra variables would you need to track alongside `current_sum` and `max_sum`? *(Hint: you'd need to track start/end indices whenever `max_sum` updates.)*
+4. Why does the **circular** version of this problem need a completely different trick (total sum − minimum subarray sum), instead of just running Kadane's twice? Think about what "wrapping around" actually means for contiguity.
+5. In Maximum Product Subarray, why is tracking only `current_product` not enough — what specific number type (hint: sign) breaks it?
+
+---
+
+## Near-Neighbor Patterns (The Ones That Trick People)
+
+These patterns share surface vocabulary with Kadane's but require completely different logic. Interviewers deliberately phrase questions to sit right at these boundaries.
+
+| Pattern | Shares with Kadane's | Key difference | Giveaway keyword |
+|---|---|---|---|
+| **Sliding Window** | Contiguous, scanning left to right | Fixed size / fixed constraint (e.g. "at most k distinct") | "size k," "at most k," "window" |
+| **Prefix Sum + HashMap** | Sums over subarrays | Checks existence/count of a target, not optimization | "equals target," "count of," "exists" |
+| **Two Pointers** | Scans an array with running state | Usually needs sorted input or a two-ended search | "sorted array," "pair," "two ends" |
+| **DP with extra state (knapsack-style)** | Optimizes over an array | Has an extra constraint dimension (budget, count of operations) | "at most k removals," "with one skip allowed" |
+| **Greedy** | Also O(n), single pass | No "extend or restart" — a locally optimal choice is provably globally optimal without needing to compare two options | "always choose the largest/smallest available" |
+
+---
+
+## How To Use This Repo If You're Serious About Getting Good
+
+1. **Don't start with the code.** Start with the [Decision Tree](#the-decision-tree-you-should-run-in-your-head) and the [Keyword Autopsy](#keyword-autopsy--change-one-word-change-the-pattern) table. Cover the "Pattern" column and try to guess it from the problem statement alone.
+2. **Do the Mutation Drills before reading dry runs.** If you can answer them cold, you understand the pattern. If you can't, that's exactly where to focus.
+3. **Re-derive the recurrence from "extend or restart"** without looking — this one sentence contains the entire algorithm.
+4. **Explain the `max(0, ...)` bug out loud to someone else** (or write it down). If you can't explain *why* it's wrong, you've memorized, not understood.
+5. **Only then move to variations** — Maximum Product Subarray, Circular Maximum Subarray, Maximum Sum Rectangle (2D), K-Concatenation Maximum Sum. Each one changes exactly one assumption from this base problem — use the Keyword Autopsy table as your template for reasoning about each.
+
+---
+
+*Built using a Socratic, derivation-first approach — the goal isn't to remember an algorithm, it's to rebuild the reasoning that produces it, every time, from scratch.*
