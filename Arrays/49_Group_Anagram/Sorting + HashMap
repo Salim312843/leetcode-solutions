@@ -47,3 +47,23 @@ TIME COMPLEXITY  : O(n * k log k)      ;  n = number of words  ;  k = length of 
 SAPACE COMPLEXITY  :  O(nk)
                     The HashMap stores N strings in the worst case.
                     Each string may take up to K characters.
+
+
+// CLEAN CODE 
+
+
+import java.util.*;
+
+public static List<List<String>> groupAnagrams(String[] strs) {
+    Map<String, List<String>> map = new HashMap<>();
+
+    for (String str : strs) {
+        char[] chars = str.toCharArray();
+        Arrays.sort(chars);
+        String signature = new String(chars);
+
+        map.computeIfAbsent(signature, k -> new ArrayList<>()).add(str);
+    }
+
+    return new ArrayList<>(map.values());
+}
