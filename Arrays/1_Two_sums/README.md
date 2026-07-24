@@ -133,3 +133,198 @@ Two Pass: All elements already exist in the map, so we must explicitly check tha
 
 The most important observation is:  complement = target - nums[i]
 
+
+# LeetCode 1. Two Sum (Java)
+
+---
+
+## Approach 1: Brute Force
+
+```java
+class Solution {
+    public int[] twoSum(int[] nums, int target) {
+
+        for (int i = 0; i < nums.length; i++) {
+
+            for (int j = i + 1; j < nums.length; j++) {
+
+                if (nums[i] + nums[j] == target) {
+                    return new int[]{i, j};
+                }
+
+            }
+
+        }
+
+        return new int[]{};
+    }
+}
+```
+
+**Time Complexity:** `O(n²)`  
+**Space Complexity:** `O(1)`
+
+---
+
+## Approach 2: HashMap (Two Pass)
+
+```java
+import java.util.*;
+
+class Solution {
+
+    public int[] twoSum(int[] nums, int target) {
+
+        Map<Integer, Integer> map = new HashMap<>();
+
+        // First Pass: Store value -> index
+        for (int i = 0; i < nums.length; i++) {
+            map.put(nums[i], i);
+        }
+
+        // Second Pass: Search complement
+        for (int i = 0; i < nums.length; i++) {
+
+            int complement = target - nums[i];
+
+            if (map.containsKey(complement) && map.get(complement) != i) {
+                return new int[]{i, map.get(complement)};
+            }
+
+        }
+
+        return new int[]{};
+    }
+}
+```
+
+**Time Complexity:** `O(n)`  
+**Space Complexity:** `O(n)`
+
+---
+
+## Approach 3: HashMap (One Pass) ⭐ Optimal
+
+```java
+import java.util.*;
+
+class Solution {
+
+    public int[] twoSum(int[] nums, int target) {
+
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (int i = 0; i < nums.length; i++) {
+
+            int complement = target - nums[i];
+
+            if (map.containsKey(complement)) {
+                return new int[]{map.get(complement), i};
+            }
+
+            map.put(nums[i], i);
+        }
+
+        return new int[]{};
+    }
+}
+```
+
+**Time Complexity:** `O(n)`  
+**Space Complexity:** `O(n)`
+
+---
+
+## Approach 4: Sorting + Two Pointers
+
+```java
+import java.util.*;
+
+class Solution {
+
+    public int[] twoSum(int[] nums, int target) {
+
+        int[][] arr = new int[nums.length][2];
+
+        for (int i = 0; i < nums.length; i++) {
+            arr[i][0] = nums[i];
+            arr[i][1] = i;
+        }
+
+        Arrays.sort(arr, (a, b) -> Integer.compare(a[0], b[0]));
+
+        int left = 0;
+        int right = nums.length - 1;
+
+        while (left < right) {
+
+            int sum = arr[left][0] + arr[right][0];
+
+            if (sum == target) {
+                return new int[]{arr[left][1], arr[right][1]};
+            }
+
+            if (sum < target)
+                left++;
+            else
+                right--;
+        }
+
+        return new int[]{};
+    }
+}
+```
+
+**Time Complexity:** `O(n log n)`  
+**Space Complexity:** `O(n)`
+
+---
+
+## Approach 5: Sorting + Binary Search
+
+```java
+import java.util.*;
+
+class Solution {
+
+    public int[] twoSum(int[] nums, int target) {
+
+        int[][] arr = new int[nums.length][2];
+
+        for (int i = 0; i < nums.length; i++) {
+            arr[i][0] = nums[i];
+            arr[i][1] = i;
+        }
+
+        Arrays.sort(arr, (a, b) -> Integer.compare(a[0], b[0]));
+
+        for (int i = 0; i < arr.length; i++) {
+
+            int complement = target - arr[i][0];
+
+            int left = i + 1;
+            int right = arr.length - 1;
+
+            while (left <= right) {
+
+                int mid = left + (right - left) / 2;
+
+                if (arr[mid][0] == complement) {
+                    return new int[]{arr[i][1], arr[mid][1]};
+                }
+
+                if (arr[mid][0] < complement)
+                    left = mid + 1;
+                else
+                    right = mid - 1;
+            }
+        }
+
+        return new int[]{};
+    }
+}
+```
+
+**Time Complexity:** `O(n log n)`  
+**Space Complexity:** `O(n)`
+
