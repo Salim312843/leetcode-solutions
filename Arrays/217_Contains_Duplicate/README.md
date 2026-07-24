@@ -57,6 +57,139 @@ This allows fast lookup in constant time.
                               The HashSet will store all `n` elements.
 
 
+
+# LeetCode 217. Contains Duplicate (Java)
+
+---
+
+## Approach 1: Brute Force
+
+```java
+class Solution {
+
+    public boolean containsDuplicate(int[] nums) {
+
+        // Compare every element with every other element
+        for (int i = 0; i < nums.length; i++) {
+
+            for (int j = i + 1; j < nums.length; j++) {
+
+                // Duplicate found
+                if (nums[i] == nums[j]) {
+                    return true;
+                }
+            }
+        }
+
+        // No duplicates found
+        return false;
+    }
+}
+```
+
+**Time Complexity:** `O(n²)`  
+**Space Complexity:** `O(1)`
+
+---
+
+## Approach 2: Sorting
+
+```java
+import java.util.Arrays;
+
+class Solution {
+
+    public boolean containsDuplicate(int[] nums) {
+
+        // Sort the array
+        Arrays.sort(nums);
+
+        // Compare adjacent elements
+        for (int i = 1; i < nums.length; i++) {
+
+            if (nums[i] == nums[i - 1]) {
+                return true;
+            }
+        }
+
+        // No duplicates found
+        return false;
+    }
+}
+```
+
+**Time Complexity:** `O(n log n)`  
+**Space Complexity:** `O(1)` *(Ignoring sorting implementation space)*
+
+---
+
+## Approach 3: HashSet ⭐ Optimal
+
+```java
+import java.util.HashSet;
+import java.util.Set;
+
+class Solution {
+
+    public boolean containsDuplicate(int[] nums) {
+
+        Set<Integer> set = new HashSet<>();
+
+        for (int num : nums) {
+
+            // Duplicate found
+            if (set.contains(num)) {
+                return true;
+            }
+
+            // Add current element
+            set.add(num);
+        }
+
+        // No duplicates found
+        return false;
+    }
+}
+```
+
+**Time Complexity:** `O(n)`  
+**Space Complexity:** `O(n)`
+
+---
+
+## Approach 4: HashMap
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+class Solution {
+
+    public boolean containsDuplicate(int[] nums) {
+
+        Map<Integer, Integer> map = new HashMap<>();
+
+        for (int num : nums) {
+
+            // Duplicate found
+            if (map.containsKey(num)) {
+                return true;
+            }
+
+            // Store frequency
+            map.put(num, 1);
+        }
+
+        // No duplicates found
+        return false;
+    }
+}
+```
+
+**Time Complexity:** `O(n)`  
+**Space Complexity:** `O(n)`
+
+
 ---
 
 
