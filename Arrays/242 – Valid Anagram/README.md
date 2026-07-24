@@ -37,129 +37,208 @@ s and t consist of lowercase English letters
 - An **O(n²)** solution would be too slow.
 - Characters are limited to **26 lowercase letters**, which allows **frequency counting**.
 
-### Implication
-
-| Approach | Feasibility |
-|--------|--------|
-| Brute Force | Works but very slow |
-| Sorting | Acceptable |
-| Frequency Count | Best solution |
+````markdown
+# LeetCode 242. Valid Anagram (Java)
 
 ---
 
-# Approaches
+## Approach 1: Brute Force
 
----
+```java
+class Solution {
 
-## 1️⃣ Brute Force Approach
+    public boolean isAnagram(String s, String t) {
 
-### Idea
+        // If lengths are different, they cannot be anagrams
+        if (s.length() != t.length()) {
+            return false;
+        }
 
-- For every character in string `s`, search for the same character in string `t`.
-- If found, remove it from `t`.
-- Continue until all characters are matched.
+        boolean[] visited = new boolean[t.length()];
 
-### Algorithm
+        // Match each character of s with an unused character in t
+        for (int i = 0; i < s.length(); i++) {
 
-1. If lengths are different → return `false`.
-2. For each character in `s`:
-3. Search for the character in `t`.
-4. If not found → return `false`.
-5. Otherwise remove that character from `t`.
-6. Continue until all characters are processed.
+            boolean found = false;
 
-### Time Complexity
+            for (int j = 0; j < t.length(); j++) {
 
- O(n²)
-For each character in `s`, we search through `t`.
-Total operations ≈ `n × n`.
+                if (!visited[j] && s.charAt(i) == t.charAt(j)) {
+                    visited[j] = true;
+                    found = true;
+                    break;
+                }
+            }
 
-### Space Complexity
+            // Character not found
+            if (!found) {
+                return false;
+            }
+        }
 
-O(1)
-Only a few variables are used.
-
-### Limitations
-
-- Very slow for large strings.
-- Repeated searching makes it inefficient.
-
----
-
-## 2️⃣ Sorting Approach
-
-### Idea
-
-If two strings are anagrams, **sorting both strings will produce the same result**.
-
-### Algorithm
-
-1. If lengths differ → return `false`.
-2. Convert both strings to character arrays.
-3. Sort both arrays.
-4. Compare the sorted arrays.
-
-### Time Complexity
-
-O(n log n)
-Sorting each string takes **O(n log n)**.
-
-### Space Complexity
-
-O(n)
-Extra space is required for character arrays.
-
-### Limitations
-
-- Sorting is slower than frequency counting.
-- Not the most efficient approach for very large strings.
-
----
-
-## 3️⃣ Frequency Count Approach (Optimal) 
-
-### Idea
-
-- Count the frequency of each character in string `s`.
-- Decrease the frequency while scanning string `t`.
-- If any frequency becomes negative → not an anagram.
-
-Since there are only **26 lowercase letters**, we can use a **frequency array**.
-
-### Algorithm
-
-1. If lengths differ → return `false`.
-2. Create an integer array of size `26`.
-3. Traverse string `s` and increase frequency.
-4. Traverse string `t` and decrease frequency.
-5. If any value becomes negative → return `false`.
-6. If all frequencies become zero → strings are anagrams.
-
-### Time Complexity
-
-O(n)
-
-We scan both strings once.
-
-### Space Complexity
-
-O(1)
-
-Only a **fixed array of size 26** is used.
-
-### Limitations
-
-- Works best when characters are limited (like lowercase letters).
-- For Unicode characters, a **HashMap** may be required instead.
-
----
-
-# Key Insight
-
-The main idea is:
-
+        return true;
+    }
+}
 ```
-Two strings are anagrams if their character frequencies are the same.
+
+**Time Complexity:** `O(n²)`  
+**Space Complexity:** `O(n)`
+
+---
+
+## Approach 2: Sorting
+
+```java
+import java.util.Arrays;
+
+class Solution {
+
+    public boolean isAnagram(String s, String t) {
+
+        // If lengths are different, they cannot be anagrams
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        char[] sArray = s.toCharArray();
+        char[] tArray = t.toCharArray();
+
+        // Sort both arrays
+        Arrays.sort(sArray);
+        Arrays.sort(tArray);
+
+        // Compare sorted arrays
+        return Arrays.equals(sArray, tArray);
+    }
+}
 ```
+
+**Time Complexity:** `O(n log n)`  
+**Space Complexity:** `O(n)`
+
+---
+
+## Approach 3: HashMap (Frequency Count)
+
+```java
+import java.util.HashMap;
+import java.util.Map;
+
+class Solution {
+
+    public boolean isAnagram(String s, String t) {
+
+        // If lengths are different, they cannot be anagrams
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        Map<Character, Integer> map = new HashMap<>();
+
+        // Count frequency of characters in s
+        for (char ch : s.toCharArray()) {
+            map.put(ch, map.getOrDefault(ch, 0) + 1);
+        }
+
+        // Reduce frequency using characters of t
+        for (char ch : t.toCharArray()) {
+
+            if (!map.containsKey(ch)) {
+                return false;
+            }
+
+            map.put(ch, map.get(ch) - 1);
+
+            if (map.get(ch) == 0) {
+                map.remove(ch);
+            }
+        }
+
+        return map.isEmpty();
+    }
+}
+```
+
+**Time Complexity:** `O(n)`  
+**Space Complexity:** `O(n)`
+
+---
+
+## Approach 4: Frequency Array ⭐ Optimal (Lowercase English Letters)
+
+```java
+class Solution {
+
+    public boolean isAnagram(String s, String t) {
+
+        // If lengths are different, they cannot be anagrams
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        int[] count = new int[26];
+
+        // Increase count for s and decrease for t
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+            count[t.charAt(i) - 'a']--;
+        }
+
+        // Check if all frequencies are zero
+        for (int value : count) {
+            if (value != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+**Time Complexity:** `O(n)`  
+**Space Complexity:** `O(1)`
+
+---
+
+## Approach 5: Frequency Array (Two Pass)
+
+```java
+class Solution {
+
+    public boolean isAnagram(String s, String t) {
+
+        // If lengths are different, they cannot be anagrams
+        if (s.length() != t.length()) {
+            return false;
+        }
+
+        int[] count = new int[26];
+
+        // Count characters in s
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+
+        // Decrease count using t
+        for (int i = 0; i < t.length(); i++) {
+            count[t.charAt(i) - 'a']--;
+        }
+
+        // Verify all counts are zero
+        for (int value : count) {
+            if (value != 0) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+}
+```
+
+**Time Complexity:** `O(n)`  
+**Space Complexity:** `O(1)`
+````
 
 Instead of sorting, we can simply **count character occurrences** using a **frequency array**, which leads to the **O(n) optimal solution**.
