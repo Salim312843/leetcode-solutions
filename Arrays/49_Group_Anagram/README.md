@@ -167,6 +167,21 @@ class Solution {
 
 ## Approach 3: Frequency Count (Canonical Signature) + HashMap ⭐ Optimal
 
+### Idea
+Use character frequency as a unique key (canonical signature).
+Strings having the same frequency count are anagrams and are grouped together.
+
+### Algorithm
+- Create a HashMap.
+- Traverse each string.
+- Count frequency of 26 characters.
+- Convert frequency array into a key.
+- Store string using this key.
+- Return all HashMap values.
+
+### Example
+
+
 ```java
 import java.util.*;
 
