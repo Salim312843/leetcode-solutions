@@ -25,242 +25,182 @@ Follow up: Can you solve the problem in O(1) extra space complexity? (The output
 ```
 ---
 
-# Breakdown of the Question (How to Think)
-
-# 🔍 Question Signals (What & Why)
-
-### 1️⃣ "Except nums[i]"
-👉 What:
-- Exclude current element
-
-👉 Why:
-- Forces you to think in parts:
-  - Left side
-  - Right side
+# LeetCode 238. Product of Array Except Self (Java)
 
 ---
 
-### 2️⃣ "Without division"
-👉 What:
-- Cannot use total_product / nums[i]
+## Approach 1: Brute Force
 
-👉 Why:
-- Division breaks when 0 is present
-- Forces logical approach (prefix + suffix)
+### Logic
+- For every index, calculate the product of all other elements.
+- Skip the current index while multiplying.
+
+```java
+class Solution {
+
+    public int[] productExceptSelf(int[] nums) {
+
+        int n = nums.length;
+        int[] result = new int[n];
+
+        for (int i = 0; i < n; i++) {
+
+            int product = 1;
+
+            for (int j = 0; j < n; j++) {
+
+                if (i != j) {
+                    product *= nums[j];
+                }
+            }
+
+            result[i] = product;
+        }
+
+        return result;
+    }
+}
+```
+
+**Time Complexity:** `O(n²)` *(For each element, all other elements are traversed to calculate the product.)*  
+**Space Complexity:** `O(1)` *(Only the output array is used, excluding the returned result.)*
 
 ---
 
-### 3️⃣ "O(n) time"
-👉 What:
-- Must solve in linear time
+## Approach 2: Division Method (Not Accepted if Division is Forbidden)
 
-👉 Why:
-- n is large (10^5)
-- Brute force O(n²) will fail
+### Logic
+- Calculate the product of all non-zero elements.
+- Handle zero cases separately.
+- Divide the total product by the current element when no zeros exist.
+
+```java
+class Solution {
+
+    public int[] productExceptSelf(int[] nums) {
+
+        int n = nums.length;
+        int[] result = new int[n];
+
+        int product = 1;
+        int zeroCount = 0;
+
+        for (int num : nums) {
+
+            if (num == 0)
+                zeroCount++;
+            else
+                product *= num;
+        }
+
+        for (int i = 0; i < n; i++) {
+
+            if (zeroCount > 1) {
+                result[i] = 0;
+            }
+            else if (zeroCount == 1) {
+
+                if (nums[i] == 0)
+                    result[i] = product;
+                else
+                    result[i] = 0;
+
+            }
+            else {
+                result[i] = product / nums[i];
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+**Time Complexity:** `O(n)` *(The array is traversed a constant number of times.)*  
+**Space Complexity:** `O(1)` *(Only a few extra variables are used.)*
 
 ---
 
-### 4️⃣ "Product fits in 32-bit"
-👉 What:
-- No overflow issue
+## Approach 3: Prefix and Suffix Arrays
 
-👉 Why:
-- Focus is on logic, not big numbers
+### Logic
+- Build a prefix product array.
+- Build a suffix product array.
+- Multiply the corresponding prefix and suffix products for each index.
+
+```java
+class Solution {
+
+    public int[] productExceptSelf(int[] nums) {
+
+        int n = nums.length;
+
+        int[] prefix = new int[n];
+        int[] suffix = new int[n];
+        int[] result = new int[n];
+
+        prefix[0] = 1;
+        suffix[n - 1] = 1;
+
+        for (int i = 1; i < n; i++) {
+            prefix[i] = prefix[i - 1] * nums[i - 1];
+        }
+
+        for (int i = n - 2; i >= 0; i--) {
+            suffix[i] = suffix[i + 1] * nums[i + 1];
+        }
+
+        for (int i = 0; i < n; i++) {
+            result[i] = prefix[i] * suffix[i];
+        }
+
+        return result;
+    }
+}
+```
+
+**Time Complexity:** `O(n)` *(Three linear traversals are performed.)*  
+**Space Complexity:** `O(n)` *(Additional prefix and suffix arrays are used.)*
 
 ---
 
-### 5️⃣ "Values include 0 and negatives"
-👉 What:
-- nums[i] can be 0 or negative
+## Approach 4: Optimized Prefix + Suffix ⭐ Optimal
 
-👉 Why:
-- Must handle:
-  - Zero carefully
-  - Sign of product
+### Logic
+- Store prefix products directly in the result array.
+- Traverse from right to left while maintaining a suffix product.
+- Multiply the prefix and suffix products in-place.
 
----
+```java
+class Solution {
 
-### 6️⃣ "Follow-up: O(1) space"
-👉 What:
-- No extra arrays allowed
+    public int[] productExceptSelf(int[] nums) {
 
-👉 Why:
-- Tests optimization
-- Forces reuse of output array
+        int n = nums.length;
+        int[] result = new int[n];
 
----
+        result[0] = 1;
 
-```
-```
+        // Prefix products
+        for (int i = 1; i < n; i++) {
+            result[i] = result[i - 1] * nums[i - 1];
+        }
 
+        int suffix = 1;
 
----
+        // Multiply with suffix products
+        for (int i = n - 1; i >= 0; i--) {
 
+            result[i] *= suffix;
+            suffix *= nums[i];
+        }
 
-
-```
-```
-
-
----
-
-# Approaches
-
----
-
-## 1️⃣ Brute Force Approach
-
-### Idea
-
-- For each element, multiply all other elements except itself.
-
-### Algorithm
-
-1. For each index `i`
-2. Initialize product = 1
-3. Loop through entire array
-4. Skip index `i`
-5. Multiply all other elements
-
-### Time Complexity
-
-```
-O(n²)
+        return result;
+    }
+}
 ```
 
-Reason:
+**Time Complexity:** `O(n)` *(Each element is visited twice in separate linear passes.)*  
+**Space Complexity:** `O(1)` *(No extra arrays are used except the returned result.)*
 
-- For each element, we traverse the entire array.
 
-### Space Complexity
-
-```
-O(1)
-```
-
-Only output array is used.
-
-### Limitations
-
-- Too slow for large inputs.
-
----
-
-## 2️⃣ Prefix and Suffix Arrays Approach
-
-### Idea
-
-- Compute:
-  - Prefix product array
-  - Suffix product array
-
-Then:
-
-```
-answer[i] = prefix[i] * suffix[i]
-```
-
-### Algorithm
-
-1. Create prefix array:
-   - prefix[i] = product of elements before i
-2. Create suffix array:
-   - suffix[i] = product of elements after i
-3. Multiply both for final answer
-
-### Time Complexity
-
-```
-O(n)
-```
-
-Reason:
-
-- One pass for prefix
-- One pass for suffix
-- One pass for result
-
-### Space Complexity
-
-```
-O(n)
-```
-
-Extra arrays for prefix and suffix.
-
-### Limitations
-
-- Uses extra space.
-
----
-
-## 3️⃣ Optimized Prefix + Suffix (Space Optimized) ⭐
-
-### Idea
-
-- Store prefix directly in answer array.
-- Use a variable to maintain suffix product.
-
-### Algorithm
-
-1. Initialize answer array.
-2. First pass (prefix):
-   - answer[i] = product of elements before i
-3. Second pass (suffix):
-   - Maintain `suffix` variable
-   - Multiply with answer[i]
-
-### Code Logic (Important)
-
-```
-answer[i] = prefix product
-suffix *= nums[i]
-```
-
-### Time Complexity
-
-```
-O(n)
-```
-
-- Only two passes through the array.
-
-### Space Complexity
-
-```
-O(1)
-```
-
-- No extra arrays used (excluding output array).
-
-### Limitations
-
-- Slightly tricky to understand initially.
-
----
-
-# Final Comparison
-
-| Approach | Time Complexity | Space Complexity | Notes |
-|--------|--------|--------|--------|
-| Brute Force | O(n²) | O(1) | Very slow |
-| Prefix + Suffix Arrays | O(n) | O(n) | Uses extra space |
-| Optimized Prefix + Suffix | O(n) | O(1) | Best solution |
-
----
-
-# Key Insight
-
-```
-answer[i] = (product of left elements) × (product of right elements)
-```
-
-Instead of recomputing repeatedly:
-
-- Use **prefix product**
-- Use **suffix product**
-
-👉 Store prefix in answer array  
-👉 Use a variable for suffix  
-
-This gives **O(n) time and O(1) space** — optimal solution.
