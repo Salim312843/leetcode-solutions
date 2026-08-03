@@ -32,197 +32,199 @@ Output: 9
 -10^9 <= nums[i] <= 10^9
 ```
 
----
 
-# 🔍 Question Signals (What & Why)
-
-### 1️⃣ "Unsorted array"
-👉 What:
-- Elements are not in order
-
-👉 Why:
-- Sorting may be needed OR avoided cleverly
+# LeetCode 128. Longest Consecutive Sequence (Java)
 
 ---
 
-### 2️⃣ "Longest consecutive sequence"
-👉 What:
-- Find longest sequence like 1,2,3,4
+## Approach 1: Brute Force
 
-👉 Why:
-- Focus is on **sequence, not subarray**
+### Logic
+- For every element, repeatedly search for the next consecutive number in the array.
+- Keep extending the sequence until the next number is not found.
+- Track the maximum sequence length.
 
----
-
-### 3️⃣ "O(n) time"
-👉 What:
-- Must be linear
-
-👉 Why:
-- Sorting (O(n log n)) is not optimal
-
----
-
-### 4️⃣ "Large range (-10^9 to 10^9)"
-👉 What:
-- Values can be very large
-
-👉 Why:
-- Cannot use counting sort / arrays
-- Must use hashing
-
----
-
-# 🚀 Approaches
-
----
-
-## 1️⃣ Brute Force
-
-### 💡 Logic
 ```java
-for each num:
-    current = num
-    count = 1
+class Solution {
 
-    while (current + 1 exists in array):
-        current++
-        count++
+    public int longestConsecutive(int[] nums) {
+
+        int longest = 0;
+
+        for (int num : nums) {
+
+            int current = num;
+            int length = 1;
+
+            while (contains(nums, current + 1)) {
+                current++;
+                length++;
+            }
+
+            longest = Math.max(longest, length);
+        }
+
+        return longest;
+    }
+
+    private boolean contains(int[] nums, int target) {
+
+        for (int num : nums) {
+            if (num == target)
+                return true;
+        }
+
+        return false;
+    }
+}
 ```
+
+**Time Complexity:** `O(n²)` *(For each element, the array may be scanned again to find consecutive numbers.)*  
+**Space Complexity:** `O(1)` *(No extra data structures are used.)*
 
 ---
 
-### ⏱ Complexity
-```
-Time: O(n²)
-Space: O(1)
-```
+## Approach 2: Sorting
 
-👉 Reason:
-- Searching for next element takes O(n)
+### Logic
+- Sort the array.
+- Traverse the sorted array while counting consecutive numbers.
+- Ignore duplicate elements.
+- Keep track of the longest sequence.
 
----
-
-## 2️⃣ Sorting Approach
-
-### 💡 Logic
 ```java
-sort array
+import java.util.Arrays;
 
-count consecutive elements
-track max length
+class Solution {
+
+    public int longestConsecutive(int[] nums) {
+
+        if (nums.length == 0)
+            return 0;
+
+        Arrays.sort(nums);
+
+        int longest = 1;
+        int current = 1;
+
+        for (int i = 1; i < nums.length; i++) {
+
+            if (nums[i] == nums[i - 1])
+                continue;
+
+            if (nums[i] == nums[i - 1] + 1) {
+                current++;
+            } else {
+                longest = Math.max(longest, current);
+                current = 1;
+            }
+        }
+
+        return Math.max(longest, current);
+    }
+}
 ```
+
+**Time Complexity:** `O(n log n)` *(Sorting the array dominates the overall complexity.)*  
+**Space Complexity:** `O(1)` *(Ignoring the space used internally by the sorting algorithm.)*
 
 ---
 
-### ⏱ Complexity
-```
-Time: O(n log n)
-Space: O(1)
-```
+## Approach 3: HashMap
 
-👉 Reason:
-- Sorting dominates
+### Logic
+- Store every number in a HashMap.
+- Start a sequence only if the previous number does not exist.
+- Count the length of the consecutive sequence.
+- Update the maximum length.
 
----
-
-## 3️⃣ HashSet Approach (Optimal) ⭐
-
-### 💡 Logic
 ```java
-store all elements in set
+import java.util.*;
 
-for each num:
-    if (num - 1 not in set):  // start of sequence
-        count length using num+1
+class Solution {
+
+    public int longestConsecutive(int[] nums) {
+
+        Map<Integer, Boolean> map = new HashMap<>();
+
+        for (int num : nums) {
+            map.put(num, true);
+        }
+
+        int longest = 0;
+
+        for (int num : map.keySet()) {
+
+            if (!map.containsKey(num - 1)) {
+
+                int current = num;
+                int length = 1;
+
+                while (map.containsKey(current + 1)) {
+                    current++;
+                    length++;
+                }
+
+                longest = Math.max(longest, length);
+            }
+        }
+
+        return longest;
+    }
+}
 ```
 
+**Time Complexity:** `O(n)` *(Each number is visited at most twice using constant-time HashMap lookups.)*  
+**Space Complexity:** `O(n)` *(The HashMap stores all unique elements.)*
+
 ---
 
-### ⏱ Complexity
+## Approach 4: HashSet ⭐ Optimal
+
+### Logic
+- Store all numbers in a HashSet.
+- Start counting only from numbers that do not have a predecessor.
+- Extend the sequence while consecutive numbers exist.
+- Track the maximum sequence length.
+
+```java
+import java.util.*;
+
+class Solution {
+
+    public int longestConsecutive(int[] nums) {
+
+        Set<Integer> set = new HashSet<>();
+
+        for (int num : nums) {
+            set.add(num);
+        }
+
+        int longest = 0;
+
+        for (int num : set) {
+
+            if (!set.contains(num - 1)) {
+
+                int current = num;
+                int length = 1;
+
+                while (set.contains(current + 1)) {
+                    current++;
+                    length++;
+                }
+
+                longest = Math.max(longest, length);
+            }
+        }
+
+        return longest;
+    }
+}
 ```
-Time: O(n)
-Space: O(n)
-```
 
-👉 Reason:
-- Each element processed once
+**Time Complexity:** `O(n)` *(Each number is processed only once using constant-time HashSet operations.)*  
+**Space Complexity:** `O(n)` *(The HashSet stores all unique elements.)*
 
 ---
 
-
----
-
-# 📊 Final Comparison
-
-| Approach | Time | Space | Notes |
-|--------|------|------|------|
-| Brute Force | O(n²) | O(1) | Slow |
-| Sorting | O(n log n) | O(1) | Better |
-| HashSet (Optimal) | O(n) | O(n) | Best |
-
----
-
-# 🎯 Final Insight
-
-```
-If problem says:
-Unsorted + O(n) + sequence
-
-👉 Think: HashSet + sequence start detection
-```
-
-## 🔥 Why HashSet is Optimal (Compared to Other Approaches)
-
-### ✅ 1. Best Time Complexity
-- HashSet → **O(n)**
-- Sorting → O(n log n)
-- Brute Force → O(n²)
-
-👉 Meets optimal requirement
-
----
-
-### ✅ 2. No Sorting Required
-- Sorting adds extra **O(n log n)** cost  
-- HashSet works directly on unsorted data  
-
----
-
-### ✅ 3. Constant Time Lookup
-- Checking `num + 1`:
-  - Array → O(n)
-  - HashSet → **O(1)**
-
-👉 Major performance improvement
-
----
-
-### ✅ 4. Avoids Redundant Work
-- Only start when:
-- num - 1 is NOT present
-- Prevents re-counting sequences  
-
----
-
-### ✅ 5. Handles Duplicates Automatically
-- HashSet removes duplicates internally  
-- No extra logic needed  
-
----
-
-### ✅ 6. Supports Large Value Range
-- Works efficiently for values from **-10^9 to 10^9**  
-- No need for large indexing arrays  
-
----
-
-### ✅ 7. Linear Traversal
-- Insert all elements → O(n)  
-- Traverse once → O(n)  
-- No nested loops required  
-
----
-
-## 🎯 Conclusion
-> HashSet is optimal because it provides constant-time lookup, avoids sorting, eliminates redundant computations, and achieves overall O(n) time complexity.
