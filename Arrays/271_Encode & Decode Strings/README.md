@@ -17,228 +17,170 @@ Implement the `encode` and `decode` methods:
 
 ---
 
-# Breakdown of the Question (How to Think)
-
-Key things to understand:
-
-- We need to **convert multiple strings into one string**.
-- Later we must **recover the exact original list**.
-- Strings may contain **any character**, including:
-  - `#`, `/`, spaces, digits, etc.
-
-### Core Challenge
-
-How do we **separate strings safely** during decoding?
-
-### Key Observation
-
-We must store **extra information** so that decoding becomes possible.
-
-👉 The most important idea:
-
-```
-Store length of each string before the string itself
-```
-
-Example:
-
-```
-["neet", "code"] → "4#neet4#code"
-```
-
-Now during decoding:
-- Read `4` → take next 4 characters → "neet"
-- Read next `4` → take next 4 characters → "code"
+# LeetCode 271. Encode and Decode Strings (Java)
 
 ---
 
-# Constraints Analysis
+## Approach 1: Delimiter-Based Encoding
 
-Typical constraints:
+### Logic
+- Join all strings using a special delimiter.
+- Split the encoded string using the same delimiter during decoding.
+- This works only if the delimiter never appears in the original strings.
 
+```java
+import java.util.*;
+
+public class Codec {
+
+    private static final String DELIMITER = "#";
+
+    // Encodes a list of strings to a single string.
+    public String encode(List<String> strs) {
+
+        if (strs.isEmpty())
+            return "";
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String str : strs) {
+            sb.append(str).append(DELIMITER);
+        }
+
+        sb.deleteCharAt(sb.length() - 1);
+
+        return sb.toString();
+    }
+
+    // Decodes a single string to a list of strings.
+    public List<String> decode(String s) {
+
+        if (s.isEmpty())
+            return new ArrayList<>();
+
+        return Arrays.asList(s.split(DELIMITER, -1));
+    }
+}
 ```
-1 ≤ strs.length ≤ 200
-0 ≤ strs[i].length ≤ 200
-strs[i] contains any ASCII characters
-```
 
-### What these constraints tell us
+**Time Complexity:** `O(n)` *(Each character is processed once during encoding and decoding.)*  
+**Space Complexity:** `O(n)` *(The encoded string and decoded list require linear extra space.)*
 
-- Strings may contain **any character** → simple delimiters may fail.
-- We must ensure **no ambiguity during decoding**.
-- Efficient string building is required.
-
-### Implication
-
-| Approach | Feasibility |
-|--------|--------|
-| Simple delimiter | Unsafe |
-| Escape characters | Complex |
-| Length + delimiter | Best solution |
+> **Note:** This approach is **not reliable** if the delimiter (`#`) appears inside any string.
 
 ---
 
-# Approaches
+## Approach 2: Escape Character + Delimiter
+
+### Logic
+- Escape every occurrence of the delimiter inside each string.
+- Join the strings using the delimiter.
+- During decoding, distinguish escaped delimiters from actual separators.
+
+```java
+import java.util.*;
+
+public class Codec {
+
+    public String encode(List<String> strs) {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String str : strs) {
+
+            str = str.replace("/", "//");
+            str = str.replace("#", "/#");
+
+            sb.append(str).append("#");
+        }
+
+        return sb.toString();
+    }
+
+    public List<String> decode(String s) {
+
+        List<String> result = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+
+        for (int i = 0; i < s.length(); i++) {
+
+            char ch = s.charAt(i);
+
+            if (ch == '/') {
+                current.append(s.charAt(++i));
+            }
+            else if (ch == '#') {
+                result.add(current.toString());
+                current.setLength(0);
+            }
+            else {
+                current.append(ch);
+            }
+        }
+
+        return result;
+    }
+}
+```
+
+**Time Complexity:** `O(n)` *(Each character is visited once while encoding and decoding.)*  
+**Space Complexity:** `O(n)` *(The encoded string and decoded list require linear extra space.)*
 
 ---
 
-## 1️⃣ Simple Delimiter Approach
+## Approach 3: Length Prefix ⭐ Optimal
 
-### Idea
+### Logic
+- Prefix every string with its length followed by a separator (`#`).
+- During decoding, read the length first.
+- Extract exactly that many characters as the original string.
+- This works for any character, including `#`.
 
-- Join all strings using a delimiter like `#`.
+```java
+import java.util.*;
 
-Example:
+public class Codec {
 
-```
-["ab", "c#d"] → "ab#c#d"
-```
+    // Encodes a list of strings to a single string.
+    public String encode(List<String> strs) {
 
-### Problem
+        StringBuilder sb = new StringBuilder();
 
-During decoding:
+        for (String str : strs) {
+            sb.append(str.length()).append("#").append(str);
+        }
 
-- We cannot distinguish between:
-  - delimiter `#`
-  - actual `#` inside string
+        return sb.toString();
+    }
 
-### Time Complexity
+    // Decodes a single string to a list of strings.
+    public List<String> decode(String s) {
 
-```
-O(n)
-```
+        List<String> result = new ArrayList<>();
 
-### Space Complexity
+        int i = 0;
 
-```
-O(n)
-```
+        while (i < s.length()) {
 
-### Limitations
+            int j = i;
 
-- Fails when strings contain delimiter characters.
-- Not reliable.
+            while (s.charAt(j) != '#') {
+                j++;
+            }
 
----
+            int length = Integer.parseInt(s.substring(i, j));
 
-## 2️⃣ Escape Character Approach
+            j++;
 
-### Idea
+            result.add(s.substring(j, j + length));
 
-- Replace delimiter inside strings with escape sequence.
+            i = j + length;
+        }
 
-Example:
-
-```
-"#" → "##"
-Input: ["ab#c", "d"] after encoding becomes "ab##c#d"
-```
-
-### Algorithm
-
-1. Replace special characters.
-2. Join using delimiter.
-3. While decoding, reverse the escaping.
-
-### Time Complexity
-
-```
-O(n)
+        return result;
+    }
+}
 ```
 
-### Space Complexity
-
-```
-O(n)
-```
-
-### Limitations
-
-- Complex implementation.
-- Error-prone.
-- Hard to maintain.
-
----
-
-## 3️⃣ Length + Delimiter Approach (Optimal) ⭐
-
-### Idea
-
-- Store **length of string + delimiter + actual string**.
-
-Example:
-
-```
-["leet","code"] → "4#leet4#code"
-```
-
-### Why this works
-
-Even if string contains `#`, it doesn’t matter because:
-
-- We first read the **length**
-- Then we extract exactly that many characters
-
-### Algorithm (Encode)
-
-1. Initialize empty result string.
-2. For each string:
-   - Append `length + '#' + string`
-3. Return result.
-
-### Algorithm (Decode)
-
-1. Initialize empty list.
-2. Traverse the encoded string:
-   - Read characters until `#` → this is length
-   - Convert length to integer
-   - Extract next `length` characters
-   - Add to result list
-3. Repeat until end.
-
-### Time Complexity
-
-```
-O(n)
-```
-
-Reason:
-
-- Each character is processed once.
-
-### Space Complexity
-
-```
-O(n)
-```
-
-Encoded string and output list require space.
-
-### Limitations
-
-- Slightly more logic required.
-- Needs careful parsing.
-
----
-
-# Final Comparison
-
-| Approach | Time Complexity | Space Complexity | Notes |
-|--------|--------|--------|--------|
-| Simple Delimiter | O(n) | O(n) | Fails for special characters |
-| Escape Character | O(n) | O(n) | Complex and error-prone |
-| Length + Delimiter (Optimal) | O(n) | O(n) | Best and reliable |
-
----
-
-# Key Insight
-
-The most important idea is:
-
-```
-Store length of each string before the string itself
-```
-
-This removes ambiguity and ensures correct decoding.
-
-👉 Instead of relying on separators, we rely on **exact length extraction**, which makes the solution **robust and optimal**.
+**Time Complexity:** `O(n)` *(Each character is processed exactly once during encoding and decoding.)*  
+**Space Complexity:** `O(n)` *(The encoded string and decoded list require linear extra space.)*
