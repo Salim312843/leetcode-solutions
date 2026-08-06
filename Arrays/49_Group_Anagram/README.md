@@ -215,3 +215,34 @@ class Solution {
 
 **Time Complexity:** `O(n × k)` *(Each string is scanned once to build its frequency signature.)*  
 **Space Complexity:** `O(n × k)` *(The HashMap stores all strings along with their generated signatures.)*
+
+
+
+### Dry Run (Frequency Count (Canonical Signature) + HashMap)
+
+Input:
+strs = ["eat", "tea", "bat"]
+
+Step 1: "eat"
+Frequency → a=1, e=1, t=1
+Key (Canonical Signature) → Same unique frequency key
+Map → { Key1 : ["eat"] }
+
+Step 2: "tea"
+Frequency → a=1, e=1, t=1
+Key → Key1 (same as "eat")
+Map → { Key1 : ["eat", "tea"] }
+
+Step 3: "bat"
+Frequency → a=1, b=1, t=1
+Key → Key2 (different)
+Map → {
+    Key1 : ["eat", "tea"],
+    Key2 : ["bat"]
+}
+
+Output:
+[["eat", "tea"], ["bat"]]
+
+Key Insight:
+Strings having the same frequency count generate the same canonical signature, so they are grouped together using a HashMap.
