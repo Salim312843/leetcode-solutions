@@ -164,7 +164,7 @@ class Solution {
 
 ---
 
-## Approach 4: Frequency Array ⭐ Optimal (Lowercase English Letters)
+## Approach 4: Frequency Count (Character Count Array) ⭐ Optimal (Lowercase English Letters)
 
 ```java
 class Solution {
@@ -196,8 +196,8 @@ class Solution {
 }
 ```
 
-**Time Complexity:** `O(n)`  
-**Space Complexity:** `O(1)`
+**Time Complexity:** `O(n)`  : We traverse both strings once, updating and checking the frequency array in a single pass.
+**Space Complexity:** `O(1)` : The frequency array always has a fixed size of 26 (for lowercase English letters), so the extra space does not grow with the input size.
 
 ---
 
