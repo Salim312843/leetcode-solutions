@@ -299,12 +299,6 @@ is still correctly produced.
 
 ---
 
-# Complexity Comparison
+🎤 Interview Explanation
 
-| Approach                 |  Time | Space |
-| ------------------------ | ----: | ----: |
-| Brute Force              | O(n³) |  O(n) |
-| HashSet                  | O(n²) |  O(n) |
-| Sorting + Two Pointers ⭐ | O(n²) | O(1)* |
-
-`*` Excluding the space required for the output and considering sorting's extra space according to the typical interview analysis.
+First, I sort the array so that I can use the Two Pointers technique and handle duplicates easily. I fix one element using a loop and then use the left and right pointers to find the remaining two elements. If the sum is less than 0, I move the left pointer forward to increase the sum. If the sum is greater than 0, I move the right pointer backward to decrease the sum. When the sum is 0, I store the triplet and skip duplicate values to ensure unique results. This gives us O(n²) time complexity and O(1) auxiliary space, excluding the output list.
